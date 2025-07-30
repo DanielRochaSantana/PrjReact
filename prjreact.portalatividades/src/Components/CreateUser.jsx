@@ -39,7 +39,7 @@ const CreateUser = () => {
             axios.post(createUserApi, user)
                 .then(response => {
                     console.log('Product created successfully: ', response.data);
-                    if (response.ok) {
+                    if (response.data.statusCode == 200) {
                         console.log('Form submitted successfully!');
                         setUser({ name: "", email: "", phone: "" })
 
@@ -48,7 +48,7 @@ const CreateUser = () => {
                     }
                 })
                 .catch(error => {
-                    console.error('Error creating product: ', error);
+                    console.error('Error creating user: ', error);
                 });
 
         } catch (error) {
