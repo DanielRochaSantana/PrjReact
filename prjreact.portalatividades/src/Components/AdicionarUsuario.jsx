@@ -17,9 +17,9 @@ const AdicionarUsuario = () => {
 
     const handelInput = (event) => {
         event.preventDefault();
-        const { nome, value } = event.target;
-        console.log(nome, value)
-        definirUsuario({ ...usuario, [nome]: value });
+        const { name, value } = event.target;
+        console.log(name, value)
+        definirUsuario({ ...usuario, [name]: value });
     }
 
     const handelSubmit = async (event) => {
@@ -93,7 +93,7 @@ const AdicionarUsuario = () => {
                 </div>
                 <div className="row" style={{ justifyContent: "space-between" }}>
                     <div className="col-4">
-                        <label htmlFor="pwd" className="form-label">Celular</label>
+                        <label htmlFor="celular" className="form-label">Celular</label>
                     </div>
                     <div className="col-4">
                         <input type="text" className="form-control" id="celular" name="celular" value={usuario.celular} onChange={handelInput} />
