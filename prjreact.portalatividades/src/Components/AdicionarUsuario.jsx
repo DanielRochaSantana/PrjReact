@@ -1,54 +1,54 @@
-import { useState } from 'react'
-import axios from 'axios'
+import axios from 'axios';
+import { estadoAtualUsuario } from 'react';
 
-const CreateUser = () => {
+const AdicionarUsuario = () => {
 
-    const createUserApi = "https://localhost:7227/WeatherForecast"
+    const url = "https://localhost:7227/Usuario"
 
-    const [error, setError] = useState(null);
+    const [error, setError] = estadoAtualUsuario(null);
 
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = estadoAtualUsuario(false);
 
-    const [user, setUser] = useState({
-        name: "",
+    const [usuario, definirUsuario] = estadoAtualUsuario({
+        nome: "",
         email: "",
-        phone: ""
+        celular: ""
     })
 
     const handelInput = (event) => {
         event.preventDefault();
-        const { name, value } = event.target;
-        console.log(name, value)
-        setUser({ ...user, [name]: value });
+        const { nome, value } = event.target;
+        console.log(nome, value)
+        definirUsuario({ ...usuario, [nome]: value });
     }
 
     const handelSubmit = async (event) => {
         event.preventDefault();
-        console.log(user)
+        console.log(usuario)
         try {
             setIsLoading(true);
 
-            axios.get(createUserApi)
+            axios.get(url)
                 .then(response => {
                     console.log(response.data);
                 })
                 .catch(error => {
-                    console.error('Error fetching data: ', error);
+                    console.error('Erro ao obter os dados: ', error);
                 });
 
-            axios.post(createUserApi, user)
+            axios.post(url, usuario)
                 .then(response => {
-                    console.log('Product created successfully: ', response.data);
+                    console.log('Usuário criado: ', response.data);
                     if (response.data.statusCode == 200) {
-                        console.log('Form submitted successfully!');
-                        setUser({ name: "", email: "", phone: "" })
+                        console.log('Operação efetuada com sucesso!');
+                        definirUsuario({ nome: "", email: "", celular: "" })
 
                     } else {
-                        console.error('Form submission failed!');
+                        console.error('Falha na operação!');
                     }
                 })
                 .catch(error => {
-                    console.error('Error creating user: ', error);
+                    console.error('Erro ao criar usuário: ', error);
                 });
 
         } catch (error) {
@@ -71,10 +71,10 @@ const CreateUser = () => {
                         &nbsp;
                     </div>
                     <div className="col-4">
-                        <label htmlFor="name" className="form-label">Nome</label>
+                        <label htmlFor="nome" className="form-label">Nome</label>
                     </div>
                     <div className="col-4">
-                        <input type="text" className="form-control" id="name" name="name" value={user.name} onChange={handelInput} />
+                        <input type="text" className="form-control" id="nome" name="nome" value={usuario.nome} onChange={handelInput} />
                     </div>
                     <div className="col-4">
                         &nbsp;
@@ -83,9 +83,9 @@ const CreateUser = () => {
                 <div className="row" style={{ justifyContent: "space-between" }}>
                     <div className="col-4">
                         <label htmlFor="email" className="form-label">Email</label>
-                    </div>                    
+                    </div>
                     <div className="col-4">
-                        <input type="email" className="form-control" id="email" name="email" value={user.email} onChange={handelInput} />
+                        <input type="email" className="form-control" id="email" name="email" value={usuario.email} onChange={handelInput} />
                     </div>
                     <div className="col-4">
                         &nbsp;
@@ -96,7 +96,7 @@ const CreateUser = () => {
                         <label htmlFor="pwd" className="form-label">Celular</label>
                     </div>
                     <div className="col-4">
-                        <input type="text" className="form-control" id="phone" name="phone" value={user.phone} onChange={handelInput} />
+                        <input type="text" className="form-control" id="celular" name="celular" value={usuario.celular} onChange={handelInput} />
                     </div>
                     <div className="col-4">
                         &nbsp;
@@ -110,4 +110,4 @@ const CreateUser = () => {
     )
 }
 
-export default CreateUser
+export default AdicionarUsuario

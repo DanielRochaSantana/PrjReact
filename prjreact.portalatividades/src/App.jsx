@@ -1,13 +1,13 @@
-import CreateUser from "./Components/CreateUser";
+import AdicionarUsuario from "./Components/AdicionarUsuario";
 import './App.css'
 
 function App() {
 
     return (
-        <>            
-            <h1>Portal Atividades</h1>            
-            <div className="CreateUser">
-                <CreateUser />
+        <>
+            <h1>Portal Atividades</h1>
+            <div className="AdicionarUsuario">
+                <AdicionarUsuario />
             </div>
         </>
     )
