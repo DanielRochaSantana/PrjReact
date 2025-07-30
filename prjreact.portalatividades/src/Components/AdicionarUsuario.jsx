@@ -1,15 +1,15 @@
 import axios from 'axios';
-import { estadoAtualUsuario } from 'react';
+import { useState } from 'react';
 
 const AdicionarUsuario = () => {
 
     const url = "https://localhost:7227/Usuario"
 
-    const [error, setError] = estadoAtualUsuario(null);
+    const [error, setError] = useState(null);
 
-    const [isLoading, setIsLoading] = estadoAtualUsuario(false);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const [usuario, definirUsuario] = estadoAtualUsuario({
+    const [usuario, definirUsuario] = useState({
         nome: "",
         email: "",
         celular: ""
