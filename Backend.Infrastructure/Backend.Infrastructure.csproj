@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PrjReact.Domain\PrjReact.Domain.csproj" />
-    <ProjectReference Include="..\PrjReact.Infrastructure\PrjReact.Infrastructure.csproj" />
+    <ProjectReference Include="..\Backend.Domain\Backend.Domain.csproj" />
   </ItemGroup>
 
 </Project>

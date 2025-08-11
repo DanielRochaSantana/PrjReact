@@ -1,6 +1,0 @@
-@PrjReact.APIAtividades_HostAddress = http://localhost:5222
-
-GET {{PrjReact.APIAtividades_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

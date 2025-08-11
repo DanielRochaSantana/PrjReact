@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace PrjReact.APIAtividades.Controllers
+namespace Backend.WebAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
