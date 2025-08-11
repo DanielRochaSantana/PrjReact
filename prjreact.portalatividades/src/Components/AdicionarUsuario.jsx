@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 const AdicionarUsuario = () => {
 
-    const url = "https://localhost:7227/Usuario"
+    const url = "http://localhost:5275/Usuario"
 
     const [error, setError] = useState(null);
 
