@@ -3,13 +3,15 @@ import { useState } from 'react';
 
 const AdicionarUsuario = () => {
 
-    const url = "http://localhost:5275/Usuario"
+    const urlGet = "http://localhost:5275/api/Usuario/ObterUsuarios"
+    const urlPost = "http://localhost:5275/api/Usuario/AdicionarUsuario"
 
     const [error, setError] = useState(null);
 
     const [isLoading, setIsLoading] = useState(false);
 
     const [usuario, definirUsuario] = useState({
+        isEdit: false,
         nome: "",
         email: "",
         celular: ""
@@ -28,7 +30,7 @@ const AdicionarUsuario = () => {
         try {
             setIsLoading(true);
 
-            axios.get(url)
+            axios.get(urlGet)
                 .then(response => {
                     console.log(response.data);
                 })
@@ -36,12 +38,12 @@ const AdicionarUsuario = () => {
                     console.error('Erro ao obter os dados: ', error);
                 });
 
-            axios.post(url, usuario)
+            axios.post(urlPost, usuario)
                 .then(response => {
                     console.log('Usuário criado: ', response.data);
                     if (response.data.statusCode == 200) {
                         console.log('Operação efetuada com sucesso!');
-                        definirUsuario({ nome: "", email: "", celular: "" })
+                        definirUsuario({ isEdit: false, nome: "", email: "", celular: "" })
 
                     } else {
                         console.error('Falha na operação!');
