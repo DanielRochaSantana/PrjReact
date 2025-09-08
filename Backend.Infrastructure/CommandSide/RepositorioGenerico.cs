@@ -25,6 +25,7 @@ namespace Backend.Infrastructure.CommandSide
         /// <param name="sTableName"></param>        
         public void Adicionar(Class registro, string sPropriedadeChave, string sTableName)
         {
+            sPropriedades = sValores = sOperacao = string.Empty;
 
             PopularPropriedadesValores(registro, sPropriedadeChave);
 
@@ -102,6 +103,7 @@ namespace Backend.Infrastructure.CommandSide
         /// <param name="sTableName"></param>
         public void Atualizar(Class registro, string sPropriedadeChave, string sTableName)
         {
+            sPropriedades = sValores = sOperacao = string.Empty;
 
             PopularPropriedadesValores(registro, sPropriedadeChave);
 
