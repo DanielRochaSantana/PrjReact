@@ -1,0 +1,23 @@
+Update Date: 13/05/2026
+-------------------------------------------------------------------
+(react)
+
+Backend namespace:
+Backend.
+
+Frontend:
+prjreact.portalatividades
+
+Modules:
+1- usuários                         - current;
+
+Tables:
+1- Usuario      (usuários)          - current;
+
+Implementar relatório de usuários;
+
+Avançar na parte de frontend;
+
+Voltar para o projeto de (blazor) e avançar na parte de frontend.
+            
+-------------------------------------------------------------------

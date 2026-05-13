@@ -1,14 +1,14 @@
 ﻿namespace Backend.Domain.Models.Base
 {
     /// <summary>
-    /// The BaseEntity class.
+    /// The IntermediateBaseEntity class.
     /// </summary>
-    public class BaseEntity
+    public class IntermediateBaseEntity
     {
         /// <summary>
         /// The Id property.
         /// </summary>
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public string Id { get; set; } = Guid.NewGuid().ToString();
 
         /// <summary>
         /// The DataCadastro property.

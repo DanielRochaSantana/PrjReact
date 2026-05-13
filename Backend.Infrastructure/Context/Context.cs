@@ -1,79 +1,103 @@
-﻿using Backend.Infrastructure.Factory;
+﻿#region Usings
+using Backend.Infrastructure.Factory;
 using Backend.Infrastructure.Interfaces.Context;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using System.Data.SqlClient;
+#endregion Usings
 
 namespace Backend.Infrastructure.Context
 {
+    /// <summary>
+    /// The Context class.
+    /// </summary>
     public class Context : IContext
     {
+        #region Class Fields
+        /// <summary>
+        /// The configuration field.
+        /// </summary>
         protected readonly IConfigurationRoot configuration;
-        protected readonly string? connString;
-        protected SqlConnection connection;
 
+        /// <summary>
+        /// The connString field.
+        /// </summary>
+        protected readonly string? connString;
+
+        /// <summary>
+        /// The connection field.
+        /// </summary>
+        protected SqlConnection connection;
+        #endregion Class Fields
+
+        #region Constructor
+        /// <summary>
+        /// The Context constructor.
+        /// </summary>
         public Context()
         {
-            configuration = new ConfigurationBuilder()
+            this.configuration = new ConfigurationBuilder()
                                      .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
                                      .AddJsonFile("appsettings.json")
                                      .Build();
 
-            connString = configuration.GetConnectionString("DefaultConnection");
+            this.connString = this.configuration.GetConnectionString("DefaultConnection");
 
-            connection = new SqlConnection(connString);
+            this.connection = new SqlConnection(this.connString);
         }
+        #endregion Constructor
 
+        #region Class Methods
         /// <summary>
-        /// Efetua conexão e a retorna
+        /// Efetua e retorna a conexão aberta.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>SqlConnection.</returns>
         public SqlConnection Conectar()
         {
-            connection = new SqlConnection(connString);
-            connection.Open();
-            return connection;
+            this.connection = new SqlConnection(this.connString);
+            this.connection.Open();
+            return this.connection;
         }
 
         /// <summary>
-        /// Efetua desconexão
+        /// Efetua a desconexão.
         /// </summary>
         public void Desconectar()
         {
-            if (connection.State == System.Data.ConnectionState.Open)
-                connection.Close();
+            if (this.connection.State == System.Data.ConnectionState.Open)
+                this.connection.Close();
         }
 
         /// <summary>
-        /// Encontra por Id
+        /// Encontra por Id.
         /// </summary>
-        /// <typeparam name="Class"></typeparam>
-        /// <param name="Id"></param>
-        /// <param name="entityEnum"></param>
-        /// <param name="sTableName"></param>
-        /// <param name="sPropriedadeChave"></param>
-        /// <param name="sQuery"></param>
-        /// <returns></returns>
-        public Class? EncontrarPorCodigo<Class>(Guid Id, ObjectFactory.EntityEnum entityEnum, string sTableName, string sPropriedadeChave, string sQuery) where Class : class
+        /// <typeparam name="Class">The Class type parameter.</typeparam>
+        /// <param name="id">The id parameter.</param>
+        /// <param name="entityEnum">The entityEnum parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        /// <param name="query">The query parameter.</param>
+        /// <returns>Class.</returns>
+        public Class? EncontrarPorId<Class>(Guid id, ObjectFactory.EntityEnum entityEnum, string tableName, string propriedadeChave, string query) where Class : class
         {
             using (SqlConnection connection = Conectar())
             {
-                return connection.Query<Class>(sQuery, ObjectFactory.GetObject(entityEnum, Id) as Class).FirstOrDefault();
+                return connection.Query<Class>(query, ObjectFactory.GetObject(entityEnum, id) as Class).FirstOrDefault();
             }
         }
 
         /// <summary>
-        /// Executa comandos
+        /// Executa comando.
         /// </summary>
-        /// <typeparam name="Class"></typeparam>
-        /// <param name="_sCommand"></param>
-        /// <param name="registro"></param>
-        public void ExecuteCommand<Class>(string _sCommand, Class registro) where Class : class
+        /// <typeparam name="Class">The Class type parameter.</typeparam>
+        /// <param name="command">The command parameter.</param>
+        /// <param name="registro">The registro parameter.</param>
+        public void ExecuteCommand<Class>(string command, Class registro) where Class : class
         {
             using (SqlConnection connection = Conectar())
             {
 
-                connection.Execute(_sCommand, registro);
+                connection.Execute(command, registro);
 
                 connection.Close();
 
@@ -83,35 +107,35 @@ namespace Backend.Infrastructure.Context
         }
 
         /// <summary>
-        /// Lista registros
+        /// Lista registros.
         /// </summary>
-        /// <typeparam name="Class"></typeparam>
-        /// <param name="sTableName"></param>
-        /// <returns></returns>
-        public IEnumerable<Class> ListarRegistros<Class>(string sTableName, string sQuery)
+        /// <typeparam name="Class">The Class type parameter.</typeparam>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <returns>IEnumerable of Class.</returns>
+        public IEnumerable<Class> ListarRegistros<Class>(string tableName, string query)
         {
             using (SqlConnection connection = Conectar())
             {
-                return connection.Query<Class>(sQuery);
+                return connection.Query<Class>(query);
             }
         }
 
         /// <summary>
         /// Retorna registros a partir de uma query
         /// </summary>
-        /// <typeparam name="A"></typeparam>
-        /// <param name="sQuery"></param>
-        /// <returns></returns>
-        public IList<TYPE> ReturnQueryList<TYPE>(string sQuery) where TYPE : class
+        /// <typeparam name="TYPE">The TYPE type parameter.</typeparam>
+        /// <param name="query">The query parameter.</param>
+        /// <returns>IList of TYPE.</returns>
+        public IList<TYPE> ReturnListFromQuery<TYPE>(string query) where TYPE : class
         {
             Conectar();
 
-            IList<TYPE> lstRegistros = (IList<TYPE>)connection.Query<TYPE>(sQuery);
+            IList<TYPE> lstRegistros = (IList<TYPE>)connection.Query<TYPE>(query);
 
             Desconectar();
 
             return lstRegistros;
         }
-
+        #endregion Class Methods
     }
 }

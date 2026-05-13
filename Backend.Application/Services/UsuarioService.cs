@@ -1,50 +1,103 @@
-﻿using Backend.Application.Interfaces;
+﻿#region Usings
+using Backend.Application.Interfaces;
 using Backend.Domain.Models.Entity;
 using Backend.Infrastructure.Factory;
 using Backend.Infrastructure.Interfaces.CommandSide;
 using Backend.Infrastructure.Interfaces.QuerySide;
+#endregion Usings
 
 namespace Backend.Application.Services
 {
+    /// <summary>
+    /// The UsuarioService service.
+    /// </summary>
     public class UsuarioService : IUsuarioService
     {
-        protected readonly IRepositorioGenerico<Usuario> _repositorioCli;
-        protected readonly IConsultaGenerica<Usuario> _consultaCli;
+        #region Service Fields
+        /// <summary>
+        /// The _repositorioUsuario field.
+        /// </summary>
+        protected readonly IRepositorioGenerico<Usuario> _repositorioUsuario;
 
-        public UsuarioService(IRepositorioGenerico<Usuario> repositorioCli,
-                              IConsultaGenerica<Usuario> consultaCli)
+        /// <summary>
+        /// The _consultaUsuario field.
+        /// </summary>
+        protected readonly IConsultaGenerica<Usuario> _consultaUsuario;
+        #endregion Service Fields
+
+        #region Constructor
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="repositorioUsuario">The repositorioUsuario parameter.</param>
+        /// <param name="consultaUsuario">The consultaUsuario parameter.</param>
+        public UsuarioService(IRepositorioGenerico<Usuario> repositorioUsuario,
+                              IConsultaGenerica<Usuario> consultaUsuario)
         {
-            _repositorioCli = repositorioCli;
-            _consultaCli = consultaCli;
+            _repositorioUsuario = repositorioUsuario;
+            _consultaUsuario = consultaUsuario;
         }
+        #endregion Constructor
 
         #region CommandSide
-        public void Adicionar(Usuario registro, string sPropriedadeChave, string sTableName)
+        /// <summary>
+        /// Efetua a adição de um registro.
+        /// </summary>
+        /// <param name="registro">The registro parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        public void Adicionar(Usuario registro, string propriedadeChave, string tableName)
         {
-            _repositorioCli.Adicionar(registro, sPropriedadeChave, sTableName);
+            _repositorioUsuario.Adicionar(registro, propriedadeChave, tableName);
         }
 
-        public void Atualizar(Usuario registro, string sPropriedadeChave, string sTableName)
+        /// <summary>
+        /// Efetua a atualização de um registro.
+        /// </summary>
+        /// <param name="registro">The registro parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        public void Atualizar(Usuario registro, string propriedadeChave, string tableName)
         {
-            _repositorioCli.Atualizar(registro, sPropriedadeChave, sTableName);
+            _repositorioUsuario.Atualizar(registro, propriedadeChave, tableName);
         }
 
-        public void Remover(Guid Id, ObjectFactory.EntityEnum entityEnum, string sTableName, string sPropriedadeChave)
+        /// <summary>
+        /// Efetua a remoção de um registro.
+        /// </summary>
+        /// <param name="id">The id parameter.</param>
+        /// <param name="entityEnum">The entityEnum parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        public void Remover(Guid id, ObjectFactory.EntityEnum entityEnum, string tableName, string propriedadeChave)
         {
-            _repositorioCli.Remover(Id, entityEnum, sTableName, sPropriedadeChave);
-        }        
+            _repositorioUsuario.Remover(id, entityEnum, tableName, propriedadeChave);
+        }
         #endregion CommandSide
 
         #region QuerySide
-        public IEnumerable<Usuario> ListarRegistros(string sTableName)
+        /// <summary>
+        /// Efetua a listagem de registros.
+        /// </summary>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <returns>IEnumerable of Usuario.</returns>
+        public IEnumerable<Usuario> ListarRegistros(string tableName)
         {
-            return _consultaCli.ListarRegistros(sTableName);
+            return _consultaUsuario.ListarRegistros(tableName);
         }
 
-        public Usuario? EncontrarPorCodigo(Guid Id, ObjectFactory.EntityEnum entityEnum, string sTableName, string sPropriedadeChave)
+        /// <summary>
+        /// Efetua a obtenção de um registro.
+        /// </summary>
+        /// <param name="id">The id parameter.</param>
+        /// <param name="entityEnum">The entityEnum parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        /// <returns>Usuario.</returns>
+        public Usuario? EncontrarPorCodigo(Guid id, ObjectFactory.EntityEnum entityEnum, string tableName, string propriedadeChave)
         {
-            return _consultaCli.EncontrarPorCodigo(Id, entityEnum, sTableName, sPropriedadeChave);
-        }        
+            return _consultaUsuario.EncontrarPorId(id, entityEnum, tableName, propriedadeChave);
+        }
         #endregion QuerySide
     }
 }

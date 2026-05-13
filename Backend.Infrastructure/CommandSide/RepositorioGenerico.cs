@@ -1,171 +1,184 @@
-﻿using Backend.Infrastructure.Factory;
+﻿#region Usings
+using Backend.Infrastructure.Factory;
 using Backend.Infrastructure.Interfaces.CommandSide;
 using Backend.Infrastructure.Interfaces.Context;
 using static Backend.Infrastructure.Factory.ObjectFactory;
+#endregion Usings
 
 namespace Backend.Infrastructure.CommandSide
 {
+    /// <summary>
+    /// The RepositorioGenerico class.
+    /// </summary>
+    /// <typeparam name="Class">The Class type parameter.</typeparam>
     public class RepositorioGenerico<Class> : IRepositorioGenerico<Class> where Class : class
     {
-
+        #region Repository Fields
+        /// <summary>
+        /// The context field.
+        /// </summary>
         private readonly IContext context;
-        protected string sPropriedades, sValores, sOperacao;
 
+        /// <summary>
+        /// The propriedades and valores and camposEValores fields.
+        /// </summary>
+        protected string propriedades, valores, camposEValores;
+        #endregion Repository Fields
+
+        #region Constructor
+        /// <summary>
+        /// The RepositorioGenerico constructor.
+        /// </summary>
+        /// <param name="context">The context parameter.</param>
         public RepositorioGenerico(IContext context)
         {
             this.context = context;
-            sPropriedades = sValores = sOperacao = string.Empty;
+
+            this.propriedades = this.valores
+                               = this.camposEValores
+                               = string.Empty;
         }
+        #endregion Constructor
 
+        #region Repository Methods
         /// <summary>
-        /// Adiona registro
+        /// Adiciona um registro.
         /// </summary>
-        /// <param name="registro"></param>        
-        /// <param name="sPropriedadeChave"></param>        
-        /// <param name="sTableName"></param>        
-        public void Adicionar(Class registro, string sPropriedadeChave, string sTableName)
+        /// <param name="registro">The registro parameter.</param>        
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>        
+        /// <param name="tableName">The tableName parameter.</param>        
+        public void Adicionar(Class registro, string propriedadeChave, string tableName)
         {
-            sPropriedades = sValores = sOperacao = string.Empty;
+            propriedades = valores = camposEValores = string.Empty;
 
-            PopularPropriedadesValores(registro, sPropriedadeChave);
+            PopularPropriedadesValores(registro, propriedadeChave);
 
-            string sCommand = " Insert into " + sTableName + " ( " +
-                                 sPropriedades +
+            string command = " Insert into " + tableName + " ( " +
+                                 propriedades +
                                  " ) " +
                                  " Values (" +
-                                 sValores +
+                                 valores +
                                  " ) ";
 
-            ExecuteCommand(sCommand, registro);
-
+            ExecuteCommand(command, registro);
         }
 
         /// <summary>
-        /// Popula propriedades e valores
+        /// Popula as propriedades e os valores.
         /// </summary>
-        /// <param name="registro"></param>
-        /// <param name="sPropriedadeChave"></param>       
-        public void PopularPropriedadesValores(Class registro, string sPropriedadeChave)
+        /// <param name="registro">The registro parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>       
+        public void PopularPropriedadesValores(Class registro, string propriedadeChave)
         {
+            IList<string> lstPropriedades = ObterDescricoesPropriedades(registro);
 
-            IList<string> lstPropriedades = ListarPropriedades(registro);
+            if (lstPropriedades.Any(filtro => filtro == propriedadeChave))
+                lstPropriedades.Remove(propriedadeChave);
 
-            if (lstPropriedades.Any(filtro => filtro == sPropriedadeChave))
-                lstPropriedades.Remove(sPropriedadeChave);
+            propriedades = string.Join(",", lstPropriedades);
 
-            sPropriedades = string.Join(",", lstPropriedades);
+            IList<string> lstValores = RetornarItensParaMontagemParteValores(lstPropriedades);
 
-            IList<string> lstValores = RetornarCamposValores(lstPropriedades);
-
-            sValores = string.Join(",", lstValores);
-
+            valores = string.Join(",", lstValores);
         }
 
         /// <summary>
-        /// Retorna a lista dos campos para valores
+        /// Retorna uma lista contendo itens no padrão '@DescriçãoPropriedade' para haver a montagem da parte de valores no comando SQL.
         /// </summary>
-        /// <param name="lstPropriedades"></param>
-        /// <returns></returns>
-        public IList<string> RetornarCamposValores(IList<string> lstPropriedades)
+        /// <param name="lstPropriedades">The lstPropriedades parameter.</param>
+        /// <returns>IList of string.</returns>
+        public IList<string> RetornarItensParaMontagemParteValores(IList<string> lstPropriedades)
         {
-
             IList<string> lstValores = (ObjectFactory.GetInstance(ObjectEnum.ListaStrings) as List<string>)!;
 
             foreach (string item in lstPropriedades)
                 lstValores.Add("@" + item);
 
             return lstValores;
-
         }
 
         /// <summary>
-        /// Remove registro
+        /// Remove um registro.
         /// </summary>
-        /// <param name="Id"></param>
-        /// <param name="operationEnums"></param>
-        /// <param name="sTableName"></param>
-        /// <param name="sPropriedadeChave"></param>
-        public void Remover(Guid Id, EntityEnum entityEnum, string sTableName, string sPropriedadeChave)
+        /// <param name="id">The id parameter.</param>
+        /// <param name="entityEnum">The entityEnum parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        public void Remover(Guid id, EntityEnum entityEnum, string tableName, string propriedadeChave)
         {
+            string command = " Delete from " + tableName + " " +
+                                " Where " + propriedadeChave + " = @" + propriedadeChave + " ";
 
-            string sCommand = " Delete from " + sTableName + " " +
-                                " Where " + sPropriedadeChave + " = @" + sPropriedadeChave + " ";
-
-            ExecuteCommand(sCommand, (ObjectFactory.GetObject(entityEnum, Id) as Class)!);
-
+            ExecuteCommand(command, (ObjectFactory.GetObject(entityEnum, id) as Class)!);
         }
 
         /// <summary>
-        /// Atualiza registro
+        /// Atualiza um registro.
         /// </summary>
-        /// <param name="registro"></param>
-        /// <param name="sPropriedadeChave"></param>
-        /// <param name="sTableName"></param>
-        public void Atualizar(Class registro, string sPropriedadeChave, string sTableName)
+        /// <param name="registro">The registro parameter.</param>
+        /// <param name="propriedadeChave">The propriedadeChave parameter.</param>
+        /// <param name="tableName">The tableName parameter.</param>
+        public void Atualizar(Class registro, string propriedadeChave, string tableName)
         {
-            sPropriedades = sValores = sOperacao = string.Empty;
+            propriedades = valores = camposEValores = string.Empty;
 
-            PopularPropriedadesValores(registro, sPropriedadeChave);
+            PopularPropriedadesValores(registro, propriedadeChave);
 
-            MontarStringOperacaoUpdate();
+            RetornarCamposEValoresParaOperacaoUpdate();
 
-            string sCommand = " Update " + sTableName + " set  " + sOperacao +
-                                " where " + sPropriedadeChave + " = @" + sPropriedadeChave + " ";
+            string command = " Update " + tableName + " set  " + camposEValores +
+                                " where " + propriedadeChave + " = @" + propriedadeChave + " ";
 
-            ExecuteCommand(sCommand, registro);
-
+            ExecuteCommand(command, registro);
         }
 
         /// <summary>
-        /// Monta a string para operação de update
+        /// Retorna os campos e os valores para haver a operação de update.
         /// </summary>
-        /// <returns></returns>
-        public string MontarStringOperacaoUpdate()
+        /// <returns>string.</returns>
+        public string RetornarCamposEValoresParaOperacaoUpdate()
         {
+            IList<string> lstColunas = propriedades.Split(',');
 
-            IList<string> lstColunas = sPropriedades.Split(',');
-
-            IList<string> lstValores = sValores.Split(',');
+            IList<string> lstValores = valores.Split(',');
 
             for (int iContador = 0; iContador < lstColunas.Count; iContador++)
             {
-                sOperacao += lstColunas[iContador] + " = " + lstValores[iContador];
+                camposEValores += lstColunas[iContador] + " = " + lstValores[iContador];
 
                 if (iContador < lstColunas.Count - 1)
-                    sOperacao += ",";
+                    camposEValores += ",";
 
             }
 
-            return sOperacao;
+            return camposEValores;
         }
 
         /// <summary>
-        /// Executa um comando
+        /// Executa um comando.
         /// </summary>
-        /// <param name="_sCommand"></param>
-        /// <param name="registro"></param>
-        public void ExecuteCommand(string _sCommand, Class registro)
+        /// <param name="command">The command parameter.</param>
+        /// <param name="registro">The registro parameter.</param>
+        public void ExecuteCommand(string command, Class registro)
         {
-            context.ExecuteCommand<Class>(_sCommand, registro);
+            context.ExecuteCommand<Class>(command, registro);
         }
 
         /// <summary>
-        /// Obtem os nomes das propriedades de um objeto
+        /// Obtem as descrições das propriedades de um objeto.
         /// Baseado em https://www.codegrepper.com/code-examples/csharp/get+list+of+properties+from+class+c%23
         /// </summary>
-        /// <param name="objeto"></param>
-        /// <returns></returns>
-        public IList<string> ListarPropriedades(object objeto)
+        /// <param name="objeto">The objeto parameter.</param>
+        /// <returns>IList of string.</returns>
+        public IList<string> ObterDescricoesPropriedades(object objeto)
         {
-
             if (objeto == null)
                 return null;
 
             Type tipo = objeto.GetType();
 
             return tipo.GetProperties().Select(selecao => selecao.Name).ToList();
-
         }
-
+        #endregion Repository Methods
     }
 }
