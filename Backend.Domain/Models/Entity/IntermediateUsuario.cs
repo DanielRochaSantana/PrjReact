@@ -5,9 +5,9 @@ using Backend.Domain.Models.Base;
 namespace Backend.Domain.Models.Entity
 {
     /// <summary>
-    /// The Usuario class.
+    /// The IntermediateUsuario class.
     /// </summary>
-    public class Usuario : BaseEntity
+    public class IntermediateUsuario : IntermediateBaseEntity
     {
         /// <summary>
         /// The Nome property.

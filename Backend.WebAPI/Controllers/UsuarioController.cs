@@ -1,10 +1,12 @@
+#region Usings
 using Backend.Application.Interfaces;
 using Backend.Domain.Models;
 using Backend.Domain.Models.Entity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Constants = Backend.Infrastructure.Utils.Constants;
-using ObjectFactory = Backend.Infrastructure.Factory.ObjectFactory;
+using ObjectFactory = Backend.Infrastructure.Factory.ObjectFactory; 
+#endregion Usings
 
 namespace Backend.WebAPI.Controllers
 {
@@ -12,30 +14,38 @@ namespace Backend.WebAPI.Controllers
     [Route("api/[controller]/[action]")]
     public class UsuarioController : ControllerBase
     {
-        protected readonly IUsuarioService _usuarioService;
-
+        #region Controller Fields
         /// <summary>
-        /// Construtor.
+        /// The _usuarioService field.
+        /// </summary>
+        protected readonly IUsuarioService _usuarioService;
+        #endregion Controller Fields 
+
+        #region Constructor
+        /// <summary>
+        /// Constructor.
         /// </summary>
         public UsuarioController(IUsuarioService usuarioService)
         {
             _usuarioService = usuarioService;
         }
+        #endregion Constructor
 
+        #region Controller EndPoints
         /// <summary>
         /// Efetua a adição de um usuário.
         /// </summary>
-        /// <param name="usuarioModel">O parâmetro usuarioModel.</param>
-        /// <returns>ActionResult HttpResponseMessage.</returns>
+        /// <param name="intermediateUsuarioModel">The intermediateUsuarioModel parameter.</param>
+        /// <returns>ActionResult of HttpResponseMessage.</returns>
         [HttpPost(Name = "AdicionarUsuario")]
-        public ActionResult<HttpResponseMessage> AdicionarUsuario([FromBody] UsuarioModel usuarioModel)
+        public ActionResult<HttpResponseMessage> AdicionarUsuario([FromBody] IntermediateUsuarioModel intermediateUsuarioModel)
         {
             try
             {
-                if (usuarioModel == null || usuarioModel.IsEdit)
+                if (intermediateUsuarioModel == null || intermediateUsuarioModel.IsEdit)
                     return BadRequest(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
-                Usuario usuario = ObjectFactory.GetUsuarioFromUsuarioModel(usuarioModel);
+                Usuario usuario = ObjectFactory.GetUsuarioFromIntermediateUsuarioModel(intermediateUsuarioModel);
 
                 _usuarioService.Adicionar(usuario, Constants.ID, Constants.USUARIO);
 
@@ -50,17 +60,17 @@ namespace Backend.WebAPI.Controllers
         /// <summary>
         /// Efetua a remoção de um usuário.
         /// </summary>
-        /// <param name="Id">O parâmetro Id.</param>
-        /// <returns>ActionResult HttpResponseMessage.</returns>
+        /// <param name="id">The id parameter.</param>
+        /// <returns>ActionResult of HttpResponseMessage.</returns>
         [HttpDelete(Name = "ApagarUsuario")]
-        public ActionResult<HttpResponseMessage> ApagarUsuario(Guid Id)
+        public ActionResult<HttpResponseMessage> ApagarUsuario(Guid id)
         {
             try
             {
-                if (Id == Guid.Empty)
+                if (id == Guid.Empty)
                     return BadRequest(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
-                _usuarioService.Remover(Id, ObjectFactory.EntityEnum.Usuario, Constants.USUARIO, Constants.ID);
+                _usuarioService.Remover(id, ObjectFactory.EntityEnum.Usuario, Constants.USUARIO, Constants.ID);
 
                 return Ok(new HttpResponseMessage(HttpStatusCode.OK));
             }
@@ -73,20 +83,27 @@ namespace Backend.WebAPI.Controllers
         /// <summary>
         /// Efetua a atualização de um usuário.
         /// </summary>
-        /// <param name="IdUsuario">O parâmetro IdUsuario</param>
-        /// <param name="_usuario">O parâmetro _usuario</param>
-        /// <returns>ActionResult HttpResponseMessage.</returns>
+        /// <param name="id">The id parameter.</param>
+        /// <param name="usuario">The usuario parameter.</param>
+        /// <returns>ActionResult of HttpResponseMessage.</returns>
         [HttpPut(Name = "AtualizarUsuario")]
-        public ActionResult<HttpResponseMessage> AtualizarUsuario(Guid IdUsuario, [FromBody] UsuarioModel? _usuario)
+        public ActionResult<HttpResponseMessage> AtualizarUsuario([FromQuery] string id, [FromBody] IntermediateUsuarioModel? usuario)
         {
             try
             {
-                if (_usuario == null || !_usuario.IsEdit)
+                if (usuario == null ||
+                    !usuario.IsEdit ||
+                    string.IsNullOrEmpty(id) ||
+                    string.IsNullOrWhiteSpace(id) ||
+                    id == Guid.Empty.ToString()
+                    )
                     return BadRequest(new HttpResponseMessage(HttpStatusCode.InternalServerError));
 
-                Usuario usuario = ObjectFactory.GetUsuarioFromUsuarioModel(_usuario);
+                usuario.Id = id;
 
-                _usuarioService.Atualizar(usuario, Constants.ID, Constants.USUARIO);
+                Usuario _usuario = ObjectFactory.GetUsuarioFromIntermediateUsuarioModel(usuario);
+
+                _usuarioService.Atualizar(_usuario, Constants.ID, Constants.USUARIO);
 
                 return Ok(new HttpResponseMessage(HttpStatusCode.OK));
             }
@@ -99,13 +116,13 @@ namespace Backend.WebAPI.Controllers
         /// <summary>
         /// Obtem os usuários.
         /// </summary>
-        /// <returns>ActionResult IEnumerable Usuario.</returns>
+        /// <returns>ActionResult of IList of Usuario.</returns>
         [HttpGet(Name = "ObterUsuarios")]
-        public ActionResult<IEnumerable<Usuario>> ObterUsuarios()
+        public ActionResult<IList<Usuario>> ObterUsuarios()
         {
             try
             {
-                IEnumerable<Usuario> usuarios = _usuarioService.ListarRegistros(Constants.USUARIO);
+                IList<Usuario> usuarios = _usuarioService.ListarRegistros(Constants.USUARIO).OrderByDescending(i => i.Nome).ToList();
                 return Ok(usuarios);
             }
             catch
@@ -117,14 +134,14 @@ namespace Backend.WebAPI.Controllers
         /// <summary>
         /// Obtem Usuário por Id.
         /// </summary>
-        /// <param name="Id">O parâmetro Id.</param>
-        /// <returns>ActionResult Usuario.</returns>
+        /// <param name="id">The id parameter.</param>
+        /// <returns>ActionResult of Usuario.</returns>
         [HttpGet(Name = "ObterUsuarioPorId")]
-        public ActionResult<Usuario> ObterUsuarioPorId(Guid Id)
+        public ActionResult<Usuario> ObterUsuarioPorId(Guid id)
         {
             try
             {
-                Usuario? usuario = _usuarioService.EncontrarPorCodigo(Id,
+                Usuario? usuario = _usuarioService.EncontrarPorCodigo(id,
                                                                       ObjectFactory.EntityEnum.Usuario,
                                                                       Constants.USUARIO,
                                                                       Constants.ID);
@@ -135,5 +152,6 @@ namespace Backend.WebAPI.Controllers
                 return BadRequest();
             }
         }
+        #endregion Controller EndPoints
     }
 }

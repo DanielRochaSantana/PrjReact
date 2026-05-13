@@ -1,13 +1,13 @@
 ﻿#region Usings
-using Backend.Domain.Models.Entity; 
+using Backend.Domain.Models.Entity;
 #endregion Usings
 
 namespace Backend.Domain.Models
 {
     /// <summary>
-    /// The UsuarioModel class.
+    /// The IntermediateUsuarioModel class.
     /// </summary>
-    public class UsuarioModel : Usuario
+    public class IntermediateUsuarioModel : IntermediateUsuario
     {
         /// <summary>
         /// The IsEdit property.
